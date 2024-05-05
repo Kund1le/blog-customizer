@@ -5,7 +5,6 @@ import { Select } from 'components/select';
 import { RadioGroup } from 'components/radio-group';
 import { Text } from 'components/text';
 import { Separator } from 'components/separator';
-import { useOutsideClickClose } from '../select/hooks/useOutsideClickClose';
 import {
 	ArticleStateType,
 	backgroundColors,
@@ -17,6 +16,7 @@ import {
 } from 'src/constants/articleProps';
 import clsx from 'clsx';
 import styles from './ArticleParamsForm.module.scss';
+import { useClose } from './hooks/UseClose';
 
 type ArticleParamsFormProps = {
 	state: ArticleStateType;
@@ -27,9 +27,15 @@ export const ArticleParamsForm = ({
 	state,
 	onChange,
 }: ArticleParamsFormProps) => {
-	const [ArticleState, setArticleState] = useState({ ...state });
+	const [ArticleState, setArticleState] = useState(state);
 	const [isActive, setIsActive] = useState(false);
 	const formRef = useRef<HTMLDivElement>(null);
+	
+	useClose({
+		isOpen: isActive,
+		onClose: () => setIsActive(false),
+		rootRef: formRef
+	})
 
 	const formOpen = () => {
 		setIsActive((prevState) => !prevState);
@@ -41,15 +47,9 @@ export const ArticleParamsForm = ({
 	};
 
 	const formReset = () => {
-		setArticleState({ ...defaultArticleState });
-		onChange({ ...defaultArticleState });
+		setArticleState(defaultArticleState);
+		onChange(defaultArticleState);
 	};
-
-	useOutsideClickClose({
-		isOpen: isActive,
-		rootRef: formRef,
-		onChange: setIsActive,
-	});
 
 	return (
 		<>
